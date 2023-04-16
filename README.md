@@ -24,4 +24,3 @@ Introduction to programming, data structures, and algorithm design, using one or
 
 - **Programming:** Java
 - **Software:** Eclipse, Visual Studio Code
- 

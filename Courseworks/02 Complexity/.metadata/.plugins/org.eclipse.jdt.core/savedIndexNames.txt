@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+/Users/thanapoomphatthanaphan/Education/Master Degree/Courses/CS 570 - Introduction to Data Structure & Algorithm/Assignment/HW02/.metadata/.plugins/org.eclipse.jdt.core
+1865797976.index
+2328979392.index
+3917156077.index

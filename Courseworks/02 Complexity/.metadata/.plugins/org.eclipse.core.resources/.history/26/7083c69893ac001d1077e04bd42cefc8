@@ -1,0 +1,20 @@
+
+public class Complexity {
+
+	public static void method1(int n) {
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				System.out.println("Operation" + i + j);
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		
+		int n = 10;
+		method1(n);
+		
+	}
+
+}

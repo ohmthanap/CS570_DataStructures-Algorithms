@@ -1,0 +1,45 @@
+
+public class Complexity {
+
+	public static void method1(int n) {
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				System.out.println("Operation" + i + j);
+			}
+		}
+	}
+	
+	public static void method2(int n) {
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				for (int k = 0; k < n; k++) {
+					System.out.println("Operation" + i + j + k);
+				}
+			}
+		}
+	}
+	
+	public static void method3(int n) {
+		
+		// finding random number using binary search method
+		for (int i = 1; i < n; i *= 2) {
+			System.out.println("Operation" + i);
+		}
+	}
+	
+	public static void main(String[] args) {
+		
+		int n = 4;
+		System.out.println("Time Complexity: O(n^2)");
+		method1(n);
+		
+		System.out.println("\nTime Complexity: O(n^3)");
+		method2(n);
+		
+		System.out.println("\nTime Complexity: O(logn)");
+		method3(n);
+	}
+
+}

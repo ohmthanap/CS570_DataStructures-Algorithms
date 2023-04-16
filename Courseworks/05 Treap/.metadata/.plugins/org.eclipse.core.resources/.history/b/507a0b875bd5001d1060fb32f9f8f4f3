@@ -1,0 +1,314 @@
+import java.util.Stack;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Treap<E extends Comparable<E>> {
+
+    private static class Node<E>{
+
+        public E data;
+        public int priority;
+        public Node<E> left;
+        public Node<E> right;
+
+        public Node(E data, int priority) {
+            
+        	if (data == null) {
+                throw new IllegalArgumentException("Data cannot be null");
+            }
+
+            else {
+                this.left = null;
+				this.right = null;
+				this.data = data;
+				this.priority = priority; 
+            }
+        }
+
+        // Method to perform right rotation
+        public Node<E> rotateRight() {
+
+            Node<E> tempNode = this.left;
+            Node<E> tempNode_rightChild = tempNode.right;
+            this.left = tempNode_rightChild;
+            tempNode.right = this;
+            return tempNode;
+
+        }
+
+        // Method to perform a left rotation
+        public Node<E> rotateLeft() {
+
+            Node<E> tempNode = this.right;
+            Node<E> tempNode_leftChild = tempNode.left;
+            this.right = tempNode_leftChild;
+            tempNode.left = this;
+            return tempNode;
+
+        }
+    }
+
+    private Random priorityGenerator;
+    private Node<E> root;
+
+    public Treap() {
+
+        this.priorityGenerator = new Random();
+		this.root = null;
+
+    }
+
+    public Treap(long seed) {
+
+        this.priorityGenerator = new Random(seed);
+		this.root = null;
+
+    }
+
+    void reheap(Node<E> newNode, Stack<Node<E>> path) {
+    	while (path.size() != 0) {
+    		Node<E> parentNode_newNode = path.pop();
+    		if (newNode.priority < parentNode_newNode.priority) {
+    			continue;
+    		}
+    		else {
+    			if (newNode == parentNode_newNode.left) {
+    				newNode = parentNode_newNode.rotateRight();
+    			}
+    			else {
+    				newNode = parentNode_newNode.rotateLeft();
+    			}
+    			if (path.size() == 0) {
+    				root = newNode;
+    			}
+    			else {
+    				Node<E> grandparentNode_newNode = path.peek();
+    				if (grandparentNode_newNode.right == parentNode_newNode) {
+    		            grandparentNode_newNode.right = newNode;
+    		        } 
+    				else {
+    		            grandparentNode_newNode.left = newNode;
+    		        }
+    			}
+    		}
+    	}
+    }
+    
+    boolean add(E key) {
+    	if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        int rand_num = priorityGenerator.nextInt();
+        return add(key, rand_num);
+    }
+    
+    boolean add(E key, int priority) {
+    	if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (root == null) {
+            root = new Node<E>(key, priority);
+            return true;
+        }
+        else {
+        	Stack<Node<E>> path = new Stack<Node<E>>();
+            Node<E> newNode = new Node<E>(key, priority);
+            Node<E> tempRoot = root;
+            if (key == root.data) {       
+                return false;
+            }
+            while (tempRoot != null) {
+            	if (key == tempRoot.data) {
+            		break;
+            	}
+            	path.push(tempRoot);
+            	if (key.compareTo(tempRoot.data) < 0) {
+                    if (tempRoot.left == null) {
+                        tempRoot.left = newNode;
+                        reheap(newNode, path);
+                        return true;
+                    }
+                    else {
+                    	tempRoot = tempRoot.left;
+                    }
+            	}
+            	else {
+            		if (tempRoot.right == null) {
+            			tempRoot.right = newNode;
+            			reheap(newNode, path);
+            			return true;
+            		}
+            		else {
+            			tempRoot = tempRoot.right;
+            		}
+            	}
+            }
+            return false;
+        }
+    }
+                      
+
+    public boolean delete(E key) {
+    	if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+		if (find(key) == false || root == null) {
+			return false;
+		}
+		Node<E> parentNode = null;
+		Node<E> nodeToDelete = root;
+		while (nodeToDelete.data != key) {
+			parentNode = nodeToDelete;
+			if (key.compareTo(nodeToDelete.data) < 0) {
+				nodeToDelete = nodeToDelete.left;
+			}
+			else {
+				nodeToDelete = nodeToDelete.right;
+			}
+		}
+		if (nodeToDelete.left == null) {
+	        if (parentNode == null) {
+	            root = nodeToDelete.right;
+	        } else if (nodeToDelete == parentNode.left) {
+	            parentNode.left = nodeToDelete.right;
+	        } else {
+	            parentNode.right = nodeToDelete.right;
+	        }
+	    } else if (nodeToDelete.right == null) {
+	        if (parentNode == null) {
+	            root = nodeToDelete.left;
+	        } else if (nodeToDelete == parentNode.left) {
+	            parentNode.left = nodeToDelete.left;
+	        } else {
+	            parentNode.right = nodeToDelete.left;
+	        }
+	    } else {
+	        if (nodeToDelete.left.priority < nodeToDelete.right.priority) {
+	            nodeToDelete = nodeToDelete.rotateRight();
+	            delete(key);
+	        } else {
+	            nodeToDelete = nodeToDelete.rotateLeft();
+	            delete(key);
+	        }
+	        if (parentNode == null) {
+	            root = nodeToDelete;
+	        } else if (nodeToDelete == parentNode.left) {
+	            parentNode.left = nodeToDelete;
+	        } else {
+	            parentNode.right = nodeToDelete;
+	        }
+	    }
+	    return true;
+    }
+		
+//		else {
+//			root = delete(key, root);
+//			Node<E> tempRoot = root;
+//			if (tempRoot.data.compareTo(key) < 0) {
+//				
+//			}
+//			return true;
+//		}
+
+	private Node<E> delete(E key, Node<E> tempRoot) {
+		if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+		if (tempRoot == null) {
+			return tempRoot;
+		}
+		else {
+			if (tempRoot.data.compareTo(key) < 0) {
+				tempRoot.right = delete(key, tempRoot.right);
+			}
+			else {
+				if (tempRoot.data.compareTo(key) > 0) {
+					tempRoot.left = delete(key, tempRoot.left);
+				}
+				else {
+					if (tempRoot.right == null) {
+						tempRoot = tempRoot.left;
+					}
+					else if (tempRoot.left == null) {
+						tempRoot = tempRoot.right;
+					}
+					else {
+						if (tempRoot.right.priority < tempRoot.left.priority) {
+							tempRoot = tempRoot.rotateRight();
+							tempRoot.right = delete(key, tempRoot.right);
+						}
+						else {
+							tempRoot = tempRoot.rotateLeft();
+							tempRoot.left = delete(key, tempRoot.left);
+						}
+					}
+				}
+			}
+		}
+		return tempRoot;
+	}
+
+    private boolean find(Node<E> root, E key) {
+    	if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+    	if (root == null) {
+    		return false;
+    	}
+    	if (key == root.data) {
+    		return true;
+    	}
+    	else if (key.compareTo(root.data) < 0) {
+    		return find(root.left, key);
+    	}
+    	else {
+    		return find(root.right, key);
+    	}
+    }
+
+    public boolean find(E key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        return find(root, key);
+    }
+
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+		preOrderTraversal(root, 1, result);
+		return result.toString();
+    }
+
+    private void preOrderTraversal(Node<E> node, int depth, StringBuilder resultBuilder) {
+		for (int i = 1; i < depth; i++) {
+			resultBuilder.append("  ");
+		}
+		if (node == null) {
+			resultBuilder.append("null\n");
+		} 
+		else {
+			resultBuilder.append("(key = " + node.data + ", ");
+			resultBuilder.append("priority = ");
+			resultBuilder.append(node.priority);
+			resultBuilder.append(")");
+			resultBuilder.append("\n");
+			preOrderTraversal(node.left, depth + 1, resultBuilder);
+			preOrderTraversal(node.right, depth + 1, resultBuilder);
+		}
+	}
+
+    public static void main(String[] args) throws Exception {
+		Treap<Integer> testTree = new Treap<Integer>();
+		// Test for adding elements
+		testTree.add(4,19); 
+		testTree.add(2,31);
+		testTree.add(6,70); 
+		testTree.add(1,84);
+		testTree.add(3,12); 
+		testTree.add(5,83);
+		testTree.add(7,26);
+        System.out.println("Deleting a Node: "+ testTree.delete(1)); //test for deleting a node
+//		System.out.println("Node Found? : "+ testTree.find(1)); // finding test
+		System.out.println(testTree.toString());
+    }
+}

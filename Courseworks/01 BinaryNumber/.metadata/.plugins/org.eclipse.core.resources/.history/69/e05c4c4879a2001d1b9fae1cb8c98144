@@ -1,0 +1,244 @@
+// Name-Surname: Thanapoom Phatthanaphan
+// CWID: 20011296
+// CS 570-PA
+
+import java.lang.String;
+import java.lang.Character;
+import java.util.Arrays;
+
+public class BinaryNumber {
+
+	private int data[];
+	private boolean overflow;
+	
+	public BinaryNumber(int length) {
+		
+		data = new int[length];
+		for (int i = 0; i < length; i++) {
+			
+			data[i] = 0;
+			
+		}
+	}
+	
+	public BinaryNumber(String str) {
+		
+		data = new int[str.length()];
+		for (int i = 0; i < data.length; i++) {
+			
+			if (Character.getNumericValue(str.charAt(i)) == 0 || Character.getNumericValue(str.charAt(i)) == 1) {
+				
+			// check the number if that is a binary number, then continue.
+				
+				data[i] = Character.getNumericValue(str.charAt(i));
+				// Add a value at each index of binary number into an array
+			
+			} else {
+				
+				System.out.println("This number is not the binary number."
+								+ "A binary number contains only 0 and 1.");
+				// Display a message that this number is not a binary number
+			}
+		}
+		
+	}
+	
+	public int getLength() {
+		
+		return data.length;
+		
+	}
+	
+	public int getDigit(int index) {
+	// get the value in an array of a binary number at the index as indicated by a parameter
+		
+		if (index > data.length - 1) {
+		// check if indicated index as parameter is not in array length,
+		// then displays that the index is out of bounds and return -1
+			
+			System.out.println("The index is out of bounds");
+			return -1;
+			
+		} else {
+			
+			return data[index];
+			
+		}
+	}
+
+	public void ShiftR(int amount) {
+	// shift all digits of a binary number at any number of places to the right, as indicated by a parameter "amount"
+		
+		int new_data[] = Arrays.copyOf(data,  data.length + amount);
+		// create a new array by copying from an original array and add more length as indicated by a parameter "amount"
+		
+		for (int i = 0; i < new_data.length; i++) {
+		// add values into a new array by firstly adding zeros as the numbers indicated by a parameter,
+		// then add values from an original array after zeros
+			
+			if (i - amount < 0) {
+				
+				new_data[i] = 0;
+				
+			} else {
+				
+				new_data[i] = data[i - amount];
+				
+			}
+			
+			System.out.print(new_data[i]);
+			
+		}
+		
+		System.out.println();
+		
+	}
+	
+	public void add(BinaryNumber aBinaryNumber) {
+	// addition of two binary numbers
+		
+		int data_2[] = new int[aBinaryNumber.getLength()];
+		// create the length of an array for a new binary number as indicated by a parameter "aBinaryNumber"
+		
+		for (int i = 0; i < aBinaryNumber.getLength(); i++) {
+		// Add a value at each index of a parameter "aBinaryNumber" into an array
+			
+			data_2[i] = aBinaryNumber.data[i];
+			
+		}
+		
+		if (data.length == data_2.length) {
+		// check the the lengths of two binary numbers
+			
+			int carry = 0;
+			// declare a variable to use as carry digit in addition method
+			
+			for (int i = 0; i < data.length; i++) {
+				
+				if (carry == 0) {
+					
+					if (data[i] == 0 && data_2[i] == 0) {
+						
+						data[i] = 0;
+						
+					} else if ((data[i] == 1 && data_2[i] == 0) || (data[i] == 0 && data_2[i] == 1)) {
+						
+						data[i] = 1;
+						
+					} else if (data[i] == 1 && data_2[i] == 1) {
+						
+						data[i] = 0;
+						carry = 1;
+						
+					}
+					
+				} else if (carry == 1) {
+					
+					if (data[i] == 0 && data_2[i] == 0) {
+						data[i] = 1;
+						carry = 0;
+						
+					} else if ((data[i] == 1 && data_2[i] == 0) || (data[i] == 0 && data_2[i] == 1)) {
+						
+						data[i] = 0;
+						
+					} else if (data[i] == 1 && data_2[i] == 1) {
+						
+						data[i] = 1;
+						
+					}
+				}
+			}
+			
+			if (carry == 1) {
+			// in case that the result has larger length than the summands,
+			// declare that this binary number is overflow
+				
+				data = Arrays.copyOf(data,  data.length + 1);
+				data[data.length - 1] = 1;
+				overflow = true;
+				
+			}
+			
+			System.out.println("The addition of two binary numbers is " + Arrays.toString(data));
+			
+		} else {
+			// in case of the lengths of two binary numbers do not coincide
+			
+			System.out.println("The lengths of the binary numbers do not coincide.");
+			
+		}
+		
+		
+	}
+	
+	public String toString() {
+	// transform a binary number to a String. If the number is the result of an overflow,
+	// then returns the string "Overflow"
+		
+		String array_toString = "";
+		if(overflow == true) {
+		// check if the number is the result of an overflow, then returns "Overflow"
+			
+			return "Overflow";
+			
+		} else {
+			
+			for (int i = 0; i < data.length; i++) {
+				array_toString += data[i];
+				
+			}
+			
+			return array_toString;
+			
+		}
+	}
+	public int toDecimal() {
+	// convert a binary number to a decimal number	
+		
+		int decimal_number = 0;
+		for (int i = 0; i < data.length; i++) {
+			decimal_number += data[i] * Math.pow(2, i);
+			
+		}
+		
+		return decimal_number;
+		
+	}
+	
+	public void clearOverflow() {
+	// clear the overflow flag
+		
+		overflow = false;
+		
+	}
+	
+	public static void main(String[] args) {
+		
+		BinaryNumber binaryNumber_length = new BinaryNumber(5);
+		BinaryNumber binaryNumber = new BinaryNumber("11010");
+		// create an object (binary number), using little-endian format
+		
+		System.out.println(binaryNumber.getDigit(2));
+		// get the digit in a binary number at the index as indicated by a parameter
+		
+		System.out.println(binaryNumber.getLength());
+		// get the length of an array of a binary number
+		
+		binaryNumber.ShiftR(3);
+		// shift all digits of a binary number at any number of places to the right, as indicated by a parameter
+		
+		System.out.println(binaryNumber.toDecimal());
+		// convert the binary number to decimal number
+		
+		binaryNumber.add(new BinaryNumber("10101"));
+		// add two binary numbers
+		
+		System.out.println("The result of addition is " + binaryNumber);
+		// display the result of addition between two binary numbers
+		// if the result has larger length than the summands then, the result displays as "Overflow"
+		
+		binaryNumber.clearOverflow();
+		
+	}
+}

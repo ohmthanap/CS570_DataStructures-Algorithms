@@ -14,7 +14,7 @@
 
 - **University:** Stevens Institute of Technology
 
-- **Course Period:** Fall Semester in 2022 (Sep 2022 - Dec 2022)
+- **Course Period:** Spring Semester in 2023 (Jan 2023 - May 2023)
 
 ### Course description
 
